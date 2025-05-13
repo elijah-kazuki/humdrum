@@ -22,29 +22,48 @@
       margin-bottom: 0.5em;
     }
 
-    .ip-box {
+    .info-box {
       background: #1e293b;
       padding: 1em 2em;
       border-radius: 10px;
       font-size: 1.5em;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin: 0.5em 0;
+    }
+
+    .vpn-on {
+      color: #facc15;
+    }
+
+    .vpn-off {
+      color: #10b981;
     }
   </style>
 </head>
 <body>
 
-  <h1>Your Public IP Address Is:</h1>
-  <div class="ip-box" id="ip">Loading...</div>
+  <h1>Your Public IP Info</h1>
+  <div class="info-box" id="ip">IP: Loading...</div>
+  <div class="info-box" id="vpn">VPN: Checking...</div>
 
   <script>
-    fetch('https://api.ipify.org?format=json')
+    fetch('https://ipapi.co/json/')
       .then(response => response.json())
       .then(data => {
-        document.getElementById('ip').textContent = data.ip;
+        document.getElementById('ip').textContent = `IP: ${data.ip}`;
+
+        if (data.security && data.security.vpn) {
+          document.getElementById('vpn').textContent = "VPN: On";
+          document.getElementById('vpn').classList.add("vpn-on");
+        } else {
+          document.getElementById('vpn').textContent = "VPN: Off";
+          document.getElementById('vpn').classList.add("vpn-off");
+        }
       })
       .catch(error => {
-        document.getElementById('ip').textContent = 'Error fetching IP';
-        console.error('IP fetch error:', error);
+        document.getElementById('ip').textContent = 'IP: Error';
+        document.getElementById('vpn').textContent = 'VPN: Unknown';
+        console.error('Fetch error:', error);
       });
   </script>
 
