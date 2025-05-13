@@ -38,39 +38,15 @@
   <div class="ip-box" id="ip">Loading...</div>
 
   <script>
-    async function getIP() {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      return data.ip;
-    }
-
-    async function checkVPN(ip) {
-      const apiKey = 'YOUR_API_KEY_HERE';
-      const url = `https://ipqualityscore.com/api/json/ip/${apiKey}/${ip}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      document.getElementById('ip').textContent = `IP: ${data.ip}`;
-
-      if (data.vpn || data.proxy || data.tor) {
-        document.getElementById('vpn').textContent = 'VPN: On';
-        document.getElementById('vpn').classList.add('vpn-on');
-      } else {
-        document.getElementById('vpn').textContent = 'VPN: Off';
-        document.getElementById('vpn').classList.add('vpn-off');
-      }
-    }
-
-    (async () => {
-      try {
-        const ip = await getIP();
-        await checkVPN(ip);
-      } catch (e) {
-        document.getElementById('ip').textContent = 'IP: Error';
-        document.getElementById('vpn').textContent = 'VPN: Unknown';
-        console.error('Error:', e);
-      }
-    })();
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('ip').textContent = data.ip;
+      })
+      .catch(error => {
+        document.getElementById('ip').textContent = 'Error fetching IP';
+        console.error('IP fetch error:', error);
+      });
   </script>
 
   <script>
